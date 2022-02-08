@@ -9,11 +9,11 @@ import { getDefaultProviders } from "../lib/helpers/client";
 import { validateCodegenParams } from "./codegen";
 
 export const htmlGenerationFile =
-  __dirname + "/../lib/docgen/html/html-doc.gen.js";
+  __dirname + "/../lib/codegen-templates/docgen/html/html-doc.gen.js";
 export const jsdocGenerationFile =
-  __dirname + "/../lib/docgen/jsdoc.gen.js";
+  __dirname + "/../lib/codegen-templates/docgen/jsdoc.gen.js";
 export const docusaurusGenerationFile =
-  __dirname + "/../lib/docgen/docusaurus/docusaurus.gen.js";
+  __dirname + "/../lib/codegen-templates/docgen/docusaurus/docusaurus.gen.js";
 export const defaultGenerationFile = htmlGenerationFile;
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 const defaultOutputDir = "docs";
