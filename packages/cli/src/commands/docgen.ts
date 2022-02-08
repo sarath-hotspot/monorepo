@@ -133,7 +133,8 @@ export default {
         isQuery,
         hashtagPrefix,
         markdownItalics,
-      }
+      },
+      omitHeader: true,
     });
 
     if (await codeGenerator.generate()) {

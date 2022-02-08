@@ -39,6 +39,7 @@ export interface CodeGeneratorConfig {
   schemaComposer: SchemaComposer;
   customScript?: string;
   mustacheView?: Record<string, unknown>;
+  omitHeader?: boolean;
 }
 
 export class CodeGenerator {
@@ -177,10 +178,11 @@ export class CodeGenerator {
       ...this._config.mustacheView,
     });
 
-    content = `// ${intlMsg.lib_codeGenerator_templateNoModify()}
-
+    if (!this._config.omitHeader) {
+      content = `// ${intlMsg.lib_codeGenerator_templateNoModify()}
 ${content}
 `;
+    }
 
     return content;
   }
