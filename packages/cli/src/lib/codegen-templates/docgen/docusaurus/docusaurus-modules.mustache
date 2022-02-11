@@ -1,13 +1,9 @@
 ---
-id: queries
-title: Queries
+id: {{#lowerFirst}}{{type}}{{/lowerFirst}}
+title: {{#title}}{{type}}{{/title}}
 ---
 
-
-{{#queryTypes}}
 {{#methods}}
-{{#isQuery}}
-{{type}}
 ### {{name}}
 
 {{#markdownItalics}}{{comment}}{{/markdownItalics}}
@@ -20,6 +16,4 @@ title: Queries
 ): {{#return}}{{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{#required}}!{{/required}}{{/return}}
 ```
 
-{{/isQuery}}
 {{/methods}}
-{{/queryTypes}}
