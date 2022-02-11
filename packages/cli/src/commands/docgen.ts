@@ -7,14 +7,23 @@ import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import { getDefaultProviders } from "../lib/helpers/client";
 import { validateCodegenParams } from "./codegen";
+import { generateProjectTemplate } from "../lib/templates";
+import path from "path";
 
-export const htmlGenerationFile =
-  __dirname + "/../lib/codegen-templates/docgen/html/html-doc.gen.js";
-export const jsdocGenerationFile =
-  __dirname + "/../lib/codegen-templates/docgen/jsdoc.gen.js";
-export const docusaurusGenerationFile =
-  __dirname + "/../lib/codegen-templates/docgen/docusaurus/docusaurus.gen.js";
-export const defaultGenerationFile = htmlGenerationFile;
+interface SupportedCommands extends Record<string, string> {
+  html: string;
+  jsdoc: string;
+  docusaurus: string;
+  "docusaurus-react": string;
+}
+
+const supportedCommands: SupportedCommands = {
+  html: __dirname + "/../lib/codegen-templates/docgen/html/html-doc.gen.js",
+  jsdoc: __dirname + "/../lib/codegen-templates/docgen/jsdoc.gen.js",
+  docusaurus: __dirname + "/../lib/codegen-templates/docgen/docusaurus/docusaurus.gen.js",
+  "docusaurus-react": __dirname + "/../lib/codegen-templates/docgen/docusaurus/docusaurus.gen.js",
+}
+
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 const defaultOutputDir = "docs";
 
@@ -32,9 +41,10 @@ const HELP = `
 ${chalk.bold("w3 docgen")} ${chalk.bold(`[<${genFileOp}>]`)} [${optionsStr}]
 
 ${intlMsg.commands_docgen_supported()}:
-  html
-  jsdoc
-  docusaurus
+  html (single-page site)
+  jsdoc (markdown)
+  docusaurus (markdown)
+  docusaurus-react (styled react app)
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
@@ -82,7 +92,7 @@ export default {
       print.error(intlMsg.commands_plugin_error_noCommand());
       print.info(HELP);
       return;
-    } else if (command !== "html" && command !== "jsdoc" && command !== "docusaurus") {
+    } else if (!Object.keys(supportedCommands).includes(command)) {
       print.error(intlMsg.commands_dapp_error_unknownCommand({ command }));
       print.info(HELP);
       return;
@@ -104,13 +114,7 @@ export default {
     const ensAddress: string | undefined = ens;
 
     // Resolve generation file
-    command = command === "html"
-        ? filesystem.resolve(htmlGenerationFile)
-        : command === "jsdoc"
-        ? filesystem.resolve(jsdocGenerationFile)
-        : command === "docusaurus"
-        ? filesystem.resolve(docusaurusGenerationFile)
-        : filesystem.resolve(defaultGenerationFile);
+    const customScript = filesystem.resolve(supportedCommands[command])
 
     const project = new Web3ApiProject({ web3apiManifestPath });
 
@@ -121,10 +125,27 @@ export default {
       ensAddress,
     });
 
+    if (command === "docusaurus-react") {
+      const projectDir = path.join(outputDir, "docusaurus-react-app");
+      try {
+        await generateProjectTemplate("app", "docusaurus", projectDir, filesystem)
+        print.newline();
+        print.info(`🔥 ${intlMsg.commands_create_readyDapp()} 🔥`);
+      } catch (err) {
+        const commandFailError = intlMsg.commands_create_error_commandFail({
+          error: err.command,
+        });
+        print.error(commandFailError);
+        process.exitCode = 1;
+        return;
+      }
+      outputDir = path.join(projectDir, "docs/wrapper");
+    }
+
     const codeGenerator = new CodeGenerator({
       project,
       schemaComposer,
-      customScript: command,
+      customScript,
       outputDir,
       mustacheView: {
         unionTypeTrim,
