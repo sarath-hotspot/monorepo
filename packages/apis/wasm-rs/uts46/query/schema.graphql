@@ -1,0 +1,4 @@
+type Query {
+  toAscii(value: String!): String!
+  toUnicode(value: String!): String!
+}
