@@ -7,44 +7,43 @@ use web3::contract::Contract;
 use web3::transports::{Either, Http, ws::WebSocket, eip_1193::{Eip1193, Provider} };
 use web3::types::{Address, H160};
 
-// pub type EitherTransport = Either<Eip1193, Http>;
-#[derive(Clone, Debug)]
+pub type EitherTransport = Either<Eip1193, Http>;
+
 pub enum EthereumProvider {
-    // HttpUrl(String),
+    HttpUrl(String),
     Eip1193(Provider)
 }
 
-#[derive(Clone, Debug)]
 pub enum EthereumSigner {
     AccountIndex(usize),
     AddressString(String),
     Address(Address)
 }
 
-#[derive(Clone, Debug)]
+// #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct ConnectionConfig {
     pub provider: EthereumProvider,
     pub signer: Option<EthereumSigner>,
 }
 
-#[derive(Clone, Debug, Default)]
+// #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Config {
     pub signer: Address,
 }
 
-#[derive(Clone, Debug, Default)]
+// #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct ConnectionConfigs {
     pub networks: HashMap<String, ConnectionConfig>,
 }
 
-#[derive(Clone, Debug, Default)]
+// #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Connections {
     pub networks: HashMap<String, Connection>,
 }
 
-#[derive(Clone, Debug)]
+// #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Connection {
-    client: Web3<Eip1193>,
+    client: Web3<EitherTransport>,
     config: Config,
     accounts: Vec<Address>
 }
@@ -52,14 +51,14 @@ pub struct Connection {
 impl Connection {
     pub async fn new(config: ConnectionConfig) -> Self {
         let transport = match config.provider {
-            // EthereumProvider::HttpUrl(url) => match Http::new(&url) {
-            //     Ok(http) => web3::transports::Either::Right(http),
-            //     Err(_) => panic!("Error creating HTTP transport with: {}", &url)
-            // },
+            EthereumProvider::HttpUrl(url) => match Http::new(&url) {
+                Ok(http) => web3::transports::Either::Right(http),
+                Err(_) => panic!("Error creating HTTP transport with: {}", &url)
+            },
             EthereumProvider::Eip1193(ethereum) =>
-                // web3::transports::Either::Left(
+                web3::transports::Either::Left(
                 Eip1193::new(ethereum)
-            // )
+            )
         };
 
         let client = Web3::new(transport);
@@ -100,10 +99,12 @@ impl Connection {
     }
 
     pub async fn from_configs(configs: ConnectionConfigs) -> Connections {
-        let mut connections = Connections::default();
+        let mut connections = Connections {
+            networks: HashMap::new()
+        };
 
         for network in configs.networks.keys() {
-            let connection = Self::new(configs.networks[network].clone()).await;
+            let connection = Self::new(configs.networks[network].clone());
             let network_str = network.to_ascii_lowercase();
 
             connections
