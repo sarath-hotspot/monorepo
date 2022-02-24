@@ -11,7 +11,7 @@ import {
 } from "./Format";
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
-import { JSON } from "../JSON";
+import { JSON } from "../json";
 import { ExtensionType } from "./ExtensionType";
 import { BigInt } from "../math";
 import { Context } from "../debug";
