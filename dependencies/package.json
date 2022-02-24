@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "@web3api/cli": "latest"
+    "@web3api/cli": "latest",
+    "@web3api/wasm-as": "latest"
   },
   "resolutions": {
     "colors": "1.4.0"

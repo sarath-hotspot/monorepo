@@ -129,7 +129,8 @@ export const runCLI = async (options: {
 export async function buildAndDeployApi(
   apiAbsPath: string,
   ipfsProvider: string,
-  ensAddress: string
+  ensAddress: string,
+  cli?: string,
 ): Promise<{
   ensDomain: string;
   ipfsCid: string;
@@ -149,6 +150,7 @@ export async function buildAndDeployApi(
       "--test-ens",
       `${ensAddress},${apiEns}`,
     ],
+    cli,
   });
 
   if (exitCode !== 0) {

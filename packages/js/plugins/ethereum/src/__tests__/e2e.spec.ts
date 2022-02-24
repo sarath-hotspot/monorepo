@@ -77,10 +77,13 @@ describe("Ethereum Plugin", () => {
       ],
     });
 
+    const cli = `${__dirname}/../../../../../../dependencies/node_modules/@web3api/cli/bin/w3`
+
     const api = await buildAndDeployApi(
       `${__dirname}/integration`,
       ipfs,
-      ensAddress
+      ensAddress,
+      cli
     );
 
     uri = `ens/testnet/${api.ensDomain}`;

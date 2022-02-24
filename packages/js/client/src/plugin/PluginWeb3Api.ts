@@ -28,8 +28,8 @@ function isValidEnv(env: Record<string, unknown>): boolean {
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
 
-  private _encoder: MsgPackEncoder = createMsgPackEncoder();
-  private _decoder: MsgPackDecoder = createMsgPackDecoder();
+  private _encoder: MsgPackEncoder<unknown> = createMsgPackEncoder();
+  private _decoder: MsgPackDecoder<unknown> = createMsgPackDecoder();
 
   constructor(
     private _uri: Uri,

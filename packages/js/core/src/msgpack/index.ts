@@ -1,13 +1,12 @@
 import {
-  Encoder,
-  Decoder,
+  Encoder as MsgPackEncoder,
+  Decoder as MsgPackDecoder,
   ExtensionCodec,
   encode,
   decode,
 } from "@msgpack/msgpack";
 
-export type MsgPackEncoder = Encoder;
-export type MsgPackDecoder = Decoder;
+export { MsgPackEncoder, MsgPackDecoder };
 
 enum ExtensionTypes {
   // must be in range 0-127
@@ -36,8 +35,8 @@ extensionCodec.register({
   },
 });
 
-export function createMsgPackEncoder(): MsgPackEncoder {
-  return new Encoder(
+export function createMsgPackEncoder(): MsgPackEncoder<undefined> {
+  return new MsgPackEncoder(
     extensionCodec,
     undefined, // context
     undefined, // maxDepth
@@ -49,6 +48,6 @@ export function createMsgPackEncoder(): MsgPackEncoder {
   );
 }
 
-export function createMsgPackDecoder(): MsgPackDecoder {
-  return new Decoder(extensionCodec);
+export function createMsgPackDecoder(): MsgPackDecoder<undefined> {
+  return new MsgPackDecoder(extensionCodec);
 }

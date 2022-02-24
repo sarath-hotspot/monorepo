@@ -76,8 +76,8 @@ export class WasmWeb3Api extends Api {
     mutation: undefined,
   };
 
-  private _encoder: MsgPackEncoder = createMsgPackEncoder();
-  private _decoder: MsgPackDecoder = createMsgPackDecoder();
+  private _encoder: MsgPackEncoder<unknown> = createMsgPackEncoder();
+  private _decoder: MsgPackDecoder<unknown> = createMsgPackDecoder();
 
   constructor(
     private _uri: Uri,
@@ -335,7 +335,9 @@ export class WasmWeb3Api extends Api {
         if (hasExport("_w3_sanitize_env", exports)) {
           state.sanitizeEnv.args = this._encoder.encode({ env: clientEnv });
 
-          await exports._w3_sanitize_env(state.sanitizeEnv.args.byteLength);
+          await exports._w3_sanitize_env(
+            (state.sanitizeEnv.args as ArrayBuffer).byteLength
+          );
           state.env = state.sanitizeEnv.result as ArrayBuffer;
           this._sanitizedEnv[module] = state.env;
         } else {
@@ -344,7 +346,9 @@ export class WasmWeb3Api extends Api {
         }
       }
 
-      await exports._w3_load_env(state.env.byteLength);
+      if (state.env) {
+        await exports._w3_load_env(state.env.byteLength);
+      }
     }
   }
 
