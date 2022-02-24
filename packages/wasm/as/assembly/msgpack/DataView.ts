@@ -3,7 +3,7 @@ import {
   BLOCK_MAXSIZE,
   throwByteIndexOutOfRange,
 } from "./utils";
-import { Context } from "./Context";
+import { Context } from "../debug";
 
 export class DataView {
   @unsafe
