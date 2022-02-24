@@ -130,7 +130,7 @@ export async function buildAndDeployApi(
   apiAbsPath: string,
   ipfsProvider: string,
   ensAddress: string,
-  cli?: string,
+  cli?: string
 ): Promise<{
   ensDomain: string;
   ipfsCid: string;
